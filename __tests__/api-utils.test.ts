@@ -8,6 +8,10 @@ import releaseData from './data/release.json' with {type: 'json'};
 const token = 'faketoken';
 const octokitClient = github.getOctokit(token);
 
+type GetReleaseByTagResponse = Awaited<
+  ReturnType<typeof octokitClient.rest.repos.getReleaseByTag>
+>;
+
 let getReleaseSpy: jest.SpiedFunction<
   typeof octokitClient.rest.repos.getReleaseByTag
 >;
@@ -20,7 +24,7 @@ describe('validateIfReleaseIsPublished', () => {
   });
 
   it('throw if release is marked as pre-release', async () => {
-    getReleaseSpy.mockReturnValue(prereleaseData as never);
+    getReleaseSpy.mockResolvedValue(prereleaseData as GetReleaseByTagResponse);
 
     expect.assertions(1);
     await expect(
@@ -31,7 +35,7 @@ describe('validateIfReleaseIsPublished', () => {
   });
 
   it('validate that release is published', async () => {
-    getReleaseSpy.mockReturnValue(releaseData as never);
+    getReleaseSpy.mockResolvedValue(releaseData as GetReleaseByTagResponse);
 
     expect.assertions(1);
     await expect(
