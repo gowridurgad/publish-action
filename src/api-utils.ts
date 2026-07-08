@@ -1,7 +1,9 @@
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 import {context} from '@actions/github';
-import {GitHub} from '@actions/github/lib/utils';
 import {HttpClient} from '@actions/http-client';
+
+type Octokit = ReturnType<typeof github.getOctokit>;
 
 interface GitRef {
   ref: string;
@@ -20,7 +22,7 @@ interface ErrorStatus extends Error {
 
 async function findTag(
   tag: string,
-  octokitClient: InstanceType<typeof GitHub>
+  octokitClient: Octokit
 ): Promise<GitRef | null> {
   try {
     const {data: foundTag} = await octokitClient.rest.git.getRef({
@@ -34,16 +36,14 @@ async function findTag(
       return null;
     } else {
       throw new Error(
-        `Retrieving refs failed with the following error: ${err}`
+        `Retrieving refs failed with the following error: ${err}`,
+        {cause: err}
       );
     }
   }
 }
 
-async function getTagSHA(
-  tag: string,
-  octokitClient: InstanceType<typeof GitHub>
-): Promise<string> {
+async function getTagSHA(tag: string, octokitClient: Octokit): Promise<string> {
   const foundTag = await findTag(tag, octokitClient);
   if (!foundTag) {
     throw new Error(`The '${tag}' tag does not exist in the remote repository`);
@@ -54,7 +54,7 @@ async function getTagSHA(
 
 export async function validateIfReleaseIsPublished(
   tag: string,
-  octokitClient: InstanceType<typeof GitHub>
+  octokitClient: Octokit
 ): Promise<void> {
   try {
     const {data: foundRelease} = await octokitClient.rest.repos.getReleaseByTag(
@@ -71,10 +71,13 @@ export async function validateIfReleaseIsPublished(
     }
   } catch (err) {
     if ((err as ErrorStatus).status === 404) {
-      throw new Error(`No GitHub release found for the ${tag} tag`);
+      throw new Error(`No GitHub release found for the ${tag} tag`, {
+        cause: err
+      });
     } else {
       throw new Error(
-        `Retrieving releases failed with the following error: ${err}`
+        `Retrieving releases failed with the following error: ${err}`,
+        {cause: err}
       );
     }
   }
@@ -83,7 +86,7 @@ export async function validateIfReleaseIsPublished(
 export async function updateTag(
   sourceTag: string,
   targetTag: string,
-  octokitClient: InstanceType<typeof GitHub>
+  octokitClient: Octokit
 ): Promise<void> {
   const sourceTagSHA = await getTagSHA(sourceTag, octokitClient);
   const foundTargetTag = await findTag(targetTag, octokitClient);

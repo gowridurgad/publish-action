@@ -1,5 +1,5 @@
-import semverParse from 'semver/functions/parse';
-import SemVer from 'semver/classes/semver';
+import * as semver from 'semver';
+import type SemVer from 'semver/classes/semver.js';
 
 export function isStableSemverVersion(version: SemVer): boolean {
   return version.prerelease.length === 0;
@@ -10,7 +10,7 @@ export function getMajorTagFromFullTag(fullTag: string): string {
 }
 
 export function validateSemverVersionFromTag(tag: string): void {
-  const semverVersion = semverParse(tag);
+  const semverVersion = semver.parse(tag);
   if (!semverVersion) {
     throw new Error(
       `The '${tag}' doesn't satisfy semantic versioning specification`

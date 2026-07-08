@@ -1,13 +1,16 @@
+import {jest, describe, it, expect, beforeEach, afterEach} from '@jest/globals';
 import * as github from '@actions/github';
-import * as apiUtils from '../src/api-utils';
+import * as apiUtils from '../src/api-utils.js';
 
-import prereleaseData from './data/pre-release.json';
-import releaseData from './data/release.json';
+import prereleaseData from './data/pre-release.json' with {type: 'json'};
+import releaseData from './data/release.json' with {type: 'json'};
 
 const token = 'faketoken';
 const octokitClient = github.getOctokit(token);
 
-let getReleaseSpy: jest.SpyInstance;
+let getReleaseSpy: jest.SpiedFunction<
+  typeof octokitClient.rest.repos.getReleaseByTag
+>;
 
 process.env.GITHUB_REPOSITORY = 'test/repository';
 
@@ -17,7 +20,7 @@ describe('validateIfReleaseIsPublished', () => {
   });
 
   it('throw if release is marked as pre-release', async () => {
-    getReleaseSpy.mockReturnValue(prereleaseData);
+    getReleaseSpy.mockReturnValue(prereleaseData as never);
 
     expect.assertions(1);
     await expect(
@@ -28,7 +31,7 @@ describe('validateIfReleaseIsPublished', () => {
   });
 
   it('validate that release is published', async () => {
-    getReleaseSpy.mockReturnValue(releaseData);
+    getReleaseSpy.mockReturnValue(releaseData as never);
 
     expect.assertions(1);
     await expect(
