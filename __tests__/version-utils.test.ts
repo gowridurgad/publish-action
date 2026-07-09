@@ -1,8 +1,9 @@
-import * as versionUtils from '../src/version-utils';
-import stableSemver from './data/stable-semver.json';
-import stableBuildSemver from './data/stable-build-semver.json';
-import prereleaseSemver from './data/prerelease-semver.json';
-import prereleaseBuildSemver from './data/prerelease-build-semver.json';
+import {describe, it, expect} from '@jest/globals';
+import * as versionUtils from '../src/version-utils.js';
+import stableSemver from './data/stable-semver.json' with {type: 'json'};
+import stableBuildSemver from './data/stable-build-semver.json' with {type: 'json'};
+import prereleaseSemver from './data/prerelease-semver.json' with {type: 'json'};
+import prereleaseBuildSemver from './data/prerelease-build-semver.json' with {type: 'json'};
 
 describe('isStableSemverVersion', () => {
   it('validate if a version is stable', () => {
