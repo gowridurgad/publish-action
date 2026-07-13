@@ -1,5 +1,5 @@
-import * as semver from 'semver';
-import type SemVer from 'semver/classes/semver.js';
+import semver from 'semver';
+import type {SemVer} from 'semver';
 
 export function isStableSemverVersion(version: SemVer): boolean {
   return version.prerelease.length === 0;

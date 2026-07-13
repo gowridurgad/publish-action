@@ -31887,6 +31887,18 @@ function qstring(str) {
 /******/ }
 /******/ 
 /************************************************************************/
+/******/ /* webpack/runtime/compat get default export */
+/******/ (() => {
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__nccwpck_require__.n = (module) => {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__nccwpck_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
+/******/ })();
+/******/ 
 /******/ /* webpack/runtime/create fake namespace object */
 /******/ (() => {
 /******/ 	var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
@@ -39295,6 +39307,7 @@ async function postMessageToSlack(slackWebhook, message) {
 
 // EXTERNAL MODULE: ./node_modules/semver/index.js
 var semver = __nccwpck_require__(2088);
+var semver_default = /*#__PURE__*/__nccwpck_require__.n(semver);
 ;// CONCATENATED MODULE: ./src/version-utils.ts
 
 function isStableSemverVersion(version) {
@@ -39304,7 +39317,7 @@ function getMajorTagFromFullTag(fullTag) {
     return fullTag.split('.')[0];
 }
 function validateSemverVersionFromTag(tag) {
-    const semverVersion = semver.parse(tag);
+    const semverVersion = semver_default().parse(tag);
     if (!semverVersion) {
         throw new Error(`The '${tag}' doesn't satisfy semantic versioning specification`);
     }
